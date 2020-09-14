@@ -69,15 +69,12 @@ class ImageCropFragment : Fragment() {
         with(binding.cropView) {
             onInitialized = {
                 viewModel.updateCropSize(binding.cropView.getCropSizeOriginal())
+                selectDefault()
             }
 
             observeCropRectOnOriginalBitmapChanged = {
                 viewModel.updateCropSize(binding.cropView.getCropSizeOriginal())
             }
-        }
-
-        binding.cropView.post {
-            selectDefault()
         }
 
         return binding.root
