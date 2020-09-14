@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.lyrebirdstudio.aspectratiorecyclerviewlib.aspectratio.AspectRatioRecyclerView.Companion.DEFAULT_INDEX
 import com.lyrebirdstudio.croppylib.main.CropRequest
 import com.lyrebirdstudio.croppylib.R
 import com.lyrebirdstudio.croppylib.databinding.FragmentImageCropBinding
@@ -40,7 +41,16 @@ class ImageCropFragment : Fragment() {
         viewModel.getCropRequest()?.let {
             binding.cropView.setTheme(it.croppyTheme)
             binding.recyclerViewAspectRatios.setActiveColor(it.croppyTheme.accentColor)
-            binding.recyclerViewAspectRatios.excludeAspectRatio(*it.excludedAspectRatios.toTypedArray())
+            binding.recyclerViewAspectRatios.excludeAspectRatio(
+                it.excludedAspectRatios,
+                it.includedAspectRatios
+            )
+        }
+
+        if (binding.recyclerViewAspectRatios.aspectRatioItemViewStateList.size == 1) {
+            binding.recyclerViewAspectRatios.visibility = View.GONE
+        } else {
+            binding.recyclerViewAspectRatios.visibility = View.VISIBLE
         }
 
         binding.recyclerViewAspectRatios.setItemSelectedListener {
@@ -57,7 +67,6 @@ class ImageCropFragment : Fragment() {
         }
 
         with(binding.cropView) {
-
             onInitialized = {
                 viewModel.updateCropSize(binding.cropView.getCropSizeOriginal())
             }
@@ -67,7 +76,17 @@ class ImageCropFragment : Fragment() {
             }
         }
 
+        binding.cropView.post {
+            selectDefault()
+        }
+
         return binding.root
+    }
+
+    private fun selectDefault() {
+        val state = binding.recyclerViewAspectRatios.aspectRatioItemViewStateList[DEFAULT_INDEX]
+        binding.cropView.setAspectRatio(state.aspectRatioItem.aspectRatio)
+        viewModel.onAspectRatioChanged(state.aspectRatioItem.aspectRatio)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -75,11 +94,11 @@ class ImageCropFragment : Fragment() {
 
         viewModel
             .getCropViewStateLiveData()
-            .observe(this, Observer(this@ImageCropFragment::renderViewState))
+            .observe(viewLifecycleOwner, Observer(this@ImageCropFragment::renderViewState))
 
         viewModel
             .getResizedBitmapLiveData()
-            .observe(this, Observer { binding.cropView.setBitmap(it.bitmap) })
+            .observe(viewLifecycleOwner) { binding.cropView.setBitmap(it.bitmap) }
 
     }
 
@@ -106,5 +125,4 @@ class ImageCropFragment : Fragment() {
             }
         }
     }
-
 }

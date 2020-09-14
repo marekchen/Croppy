@@ -11,6 +11,7 @@ open class CropRequest(
     open val sourceUri: Uri,
     open val requestCode: Int,
     open val excludedAspectRatios: List<AspectRatio>,
+    open val includedAspectRatios: List<AspectRatio>,
     open val croppyTheme: CroppyTheme
 ) : Parcelable {
 
@@ -20,8 +21,9 @@ open class CropRequest(
         val destinationUri: Uri,
         override val requestCode: Int,
         override val excludedAspectRatios: List<AspectRatio> = arrayListOf(),
+        override val includedAspectRatios: List<AspectRatio> = arrayListOf(),
         override val croppyTheme: CroppyTheme = CroppyTheme(R.color.blue)
-    ) : CropRequest(sourceUri, requestCode, excludedAspectRatios, croppyTheme)
+    ) : CropRequest(sourceUri, requestCode, excludedAspectRatios, includedAspectRatios, croppyTheme)
 
     @Parcelize
     class Auto(
@@ -29,12 +31,13 @@ open class CropRequest(
         override val requestCode: Int,
         val storageType: StorageType = StorageType.EXTERNAL,
         override val excludedAspectRatios: List<AspectRatio> = arrayListOf(),
+        override val includedAspectRatios: List<AspectRatio> = arrayListOf(),
         override val croppyTheme: CroppyTheme = CroppyTheme(R.color.blue)
-    ) : CropRequest(sourceUri, requestCode, excludedAspectRatios, croppyTheme)
+    ) : CropRequest(sourceUri, requestCode, excludedAspectRatios, includedAspectRatios, croppyTheme)
 
     companion object {
         fun empty(): CropRequest =
-            CropRequest(Uri.EMPTY, -1, arrayListOf(), CroppyTheme(R.color.blue))
+            CropRequest(Uri.EMPTY, -1, arrayListOf(), arrayListOf(), CroppyTheme(R.color.blue))
     }
 }
 

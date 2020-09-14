@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.lyrebirdstudio.aspectratiorecyclerviewlib.R
 import com.lyrebirdstudio.aspectratiorecyclerviewlib.aspectratio.model.AspectRatio
 
-
 class AspectRatioRecyclerView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
@@ -20,7 +19,7 @@ class AspectRatioRecyclerView @JvmOverloads constructor(
 
     private val aspectRatioListAdapter = AspectRatioListAdapter()
 
-    private lateinit var aspectRatioItemViewStateList: List<AspectRatioItemViewState>
+    lateinit var aspectRatioItemViewStateList: List<AspectRatioItemViewState>
 
     private var onItemSelectedListener: ((AspectRatioItemViewState) -> Unit)? = null
 
@@ -53,7 +52,7 @@ class AspectRatioRecyclerView @JvmOverloads constructor(
 
         aspectRatioListAdapter.updateItemList(aspectRatioItemViewStateList)
 
-        select(0)
+        select(DEFAULT_INDEX)
 
         aspectRatioListAdapter.onItemSelected = {
             onItemSelected(it)
@@ -87,18 +86,34 @@ class AspectRatioRecyclerView @JvmOverloads constructor(
         select(DEFAULT_INDEX)
     }
 
-    fun excludeAspectRatio(vararg excludedAspect: AspectRatio) {
+    fun excludeAspectRatio(excludedAspect: List<AspectRatio>, includedAspect: List<AspectRatio>) {
         val includedList = arrayListOf<AspectRatioItemViewState>()
-        aspectRatioItemViewStateList.forEach { existingAspect ->
-            var isExcluded = false
-            excludedAspect.forEach { excludedAspect ->
-                if (excludedAspect == existingAspect.aspectRatioItem.aspectRatio) {
-                    isExcluded = true
+
+        if (includedAspect.isNotEmpty()) {
+            aspectRatioItemViewStateList.forEach { existingAspect ->
+                var isIncluded = false
+                includedAspect.forEach { includedAspect ->
+                    if (includedAspect == existingAspect.aspectRatioItem.aspectRatio) {
+                        isIncluded = true
+                    }
+                }
+
+                if (isIncluded) {
+                    includedList.add(existingAspect)
                 }
             }
+        } else {
+            aspectRatioItemViewStateList.forEach { existingAspect ->
+                var isExcluded = false
+                excludedAspect.forEach { excludedAspect ->
+                    if (excludedAspect == existingAspect.aspectRatioItem.aspectRatio) {
+                        isExcluded = true
+                    }
+                }
 
-            if (isExcluded.not()) {
-                includedList.add(existingAspect)
+                if (isExcluded.not()) {
+                    includedList.add(existingAspect)
+                }
             }
         }
 
@@ -160,7 +175,6 @@ class AspectRatioRecyclerView @JvmOverloads constructor(
     }
 
     companion object {
-        private const val DEFAULT_INDEX = 0
-
+        const val DEFAULT_INDEX = 0
     }
 }

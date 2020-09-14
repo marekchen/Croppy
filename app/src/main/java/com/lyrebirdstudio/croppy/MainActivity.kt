@@ -82,6 +82,13 @@ class MainActivity : AppCompatActivity() {
             excludedAspectRatios = arrayListOf(AspectRatio.ASPECT_FREE)
         )
 
+        val includeAspectRatiosCropRequest = CropRequest.Manual(
+            sourceUri = uri,
+            destinationUri = destinationUri,
+            requestCode = RC_CROP_IMAGE,
+            includedAspectRatios = arrayListOf(AspectRatio.ASPECT_INS_1_1)
+        )
+
         val themeCropRequest = CropRequest.Manual(
             sourceUri = uri,
             destinationUri = destinationUri,
@@ -89,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             croppyTheme = CroppyTheme(R.color.blue)
         )
 
-        Croppy.start(this, themeCropRequest)
+        Croppy.start(this, includeAspectRatiosCropRequest)
     }
 
     companion object {
